@@ -118,6 +118,7 @@ if __name__ == "__main__":
         (["-oq", "-m split_account"], "default.csv", "default_w_splits.qif"),
         (["-oqc Description", "-m xero"], "xero.csv", "xero.qif"),
         (["-oq", "-m mint"], "mint.csv", "mint.qif"),
+        (["-oq", "-m mint_extra"], "mint_extra.csv", "mint_extra.qif"),
         (["-oq", "-m mint_headerless"], "mint_headerless.csv", "mint.qif"),
         (MINT_ALT_OPTS, "mint.csv", "mint_alt.qif"),
         (["-oe 20150908", SERVER_DATE], "default.csv", "default.ofx"),
@@ -145,6 +146,11 @@ if __name__ == "__main__":
             ["-o", "-m pcmastercard", "-e 20190120", SERVER_DATE],
             "pcmastercard.csv",
             "pcmastercard.ofx",
+        ),
+        (
+            # N.B. input file obtained by pre-processing with
+            #    bin/csvtrim ubs-ch-fr.csv > ubs-ch-fr_trimmed.csv
+            ["-oq", "-m ubs-ch-fr"], "ubs-ch-fr_trimmed.csv", "ubs-ch-fr.qif"
         ),
         (
             ["-o", "-m outbank", "-e 20190301", SERVER_DATE],
