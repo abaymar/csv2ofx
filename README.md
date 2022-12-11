@@ -286,6 +286,43 @@ How to contribute a mapping:
 4. Add a `csv2ofx` call for your mapping to the tests in `tests/test.py`, in `PRE_TESTS`. If you added an OFX (not QIF) converted file, pay attention to the `-e` (end date) and `-D` (server date) arguments in the test- otherwise tests may pass on your workstation and fail on the build server.
 5. Ensure your test succeeds (see above).
 
+### Amazon Transactions
+
+How to reconcile Amazon transactions and orders when importing into your financial software.
+
+1. Download list of transactions, in CSV format, from your credit card. This is the only way to ensure that all transactions are included.
+2. Download report of Amazon orders: https://www.amazon.com/b2b/reports
+3. Select and paste the list of Amazon transactions from https://www.amazon.com/cpe/yourpayments/transactions to text editor. You might need to 
+4. Using regular expressions, transform Amazon transactions from this format: 
+
+    Amazon.com Visa Signature **** 1234-$59.99
+    Order #111-2222299-3394504
+    AMZN Mktp US
+    December 9, 2022
+
+   to a format like this: 
+
+    December 9, 2022#-$59.99#111-2222299-3394504#
+
+    Note that it will require some manual cleanup, e.g. for multiple transactions occurring on the same day, or for those transactions (partially) paid with points or gift cards.
+
+5. Copy-paste the transaction document to Excel
+6. Convert text to columns (with '#' used for separator). This is your tab 1.
+7. Add tab 2 from steps 1. 
+8. In tab 2, move the price column to column A. You need to use it as a VLOOKUP key.
+9. In this column A, if your bank exports the transaction with positive values for purchase prices, convert them to negative.
+10. In the same column, identify price duplicates (condition-format duplicates). You will need to resolve them manually - e.g. based on the transaction date.
+11. Using VLOOKUP() function, add a new column to tab 1, which is tab 2 Amazon order number from a match on the transaction price.
+12. Reconcile missing/conflicting data
+13. Add tab 3 from step 2.
+14. In tab 3, move the Amazon order number to column A. You need to use it as a VLOOKUP key.
+15. Using VLOOKUP() function, add a new column to tab 1, which is tab 3 Amazon order description from a match on the transaction ID.
+16. In tab 1, remove all columns but DATE, AMOUNT, DESCRIPTION. Name these columns as such. 
+17. Add another column, PAYEE, and populate it with AMAZON.com
+18. Export as CSV.
+19. Translate to OFX using abaymar/csv2ofx.git.
+20. Import the OFX into your financial software.
+
 ## License
 
 csv2ofx is distributed under the [MIT License](http://opensource.org/licenses/MIT), the same as [meza](https://github.com/reubano/meza).
